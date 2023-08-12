@@ -1,0 +1,74 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<div id="app">
+  <ul>
+    <li v-for="x in names">{{ x }}</li>
+  </ul>
+
+  <table>
+    <table>
+      <tr>
+        <th>Completed</th>
+        <th>Title</th>
+      </tr>
+      <tr v-for="item in todoItems">
+        <td>
+          <input
+            type="checkbox"
+            v-model="item.completed"
+            @change="complete(item)"
+          />
+        </td>
+        <td>{{item.title}}</td>
+      </tr>
+    </table>
+  </table>
+</div>
+
+<script>
+  const { createApp, ref } = Vue;
+  createApp({
+    mounted() {
+      axios.get("http://localhost:4000/todos").then((res) => {
+        console.log(res.data);
+        this.todoItems = res.data;
+      });
+    },
+    setup() {
+      const names = ref(["Jani", "Hege", "Kai"]);
+      const todoItems = ref([]);
+
+      const complete = (item) => {
+        axios
+          .put(`http://localhost:4000/todos/${item.id}`, item)
+          .then(function (response) {
+            console.log(response.data);
+          });
+      };
+      return {
+        names,
+        todoItems,
+        complete,
+      };
+    },
+  }).mount("#app");
+</script>
+
+<style>
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
