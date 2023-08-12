@@ -1,0 +1,67 @@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<div
+  ng-app="myApp"
+  ng-controller="myCtrl"
+  ng-init="names=['Jani','Hege','Kai']; todoItems=[]"
+>
+  <ul>
+    <li ng-repeat="x in names">{{ x }}</li>
+  </ul>
+
+  <table>
+    <table>
+      <tr>
+        <th>Completed</th>
+        <th>Title</th>
+      </tr>
+      <tr ng-repeat="item in todoItems">
+        <td>
+          <input
+            type="checkbox"
+            ng-model="item.completed"
+            ng-change="complete(item)"
+          />
+        </td>
+        <td>{{item.title}}</td>
+      </tr>
+    </table>
+  </table>
+</div>
+
+<script>
+  var app = angular.module("myApp", []);
+  app.controller("myCtrl", function ($scope, $http) {
+    $http.get("http://localhost:4000/todos").then(function (response) {
+      $scope.todoItems = response.data;
+    });
+
+    $scope.complete = function complete(item) {
+      console.log(item)
+      $http
+        .put(`http://localhost:4000/todos/${item.id}`, item)
+        .then(function (response) {
+          console.log(response.data);
+        });
+    };
+  });
+</script>
+
+<style>
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
